@@ -3,7 +3,7 @@
 #include<iostream>
 #include<time.h>
 
-#include "AVL_test.h"
+
 #include"AVL.h"
 
 int main()
