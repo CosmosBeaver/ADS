@@ -79,8 +79,10 @@ void MinHeapify(struct MinHeap *h, int i)
 
     if (l < h->heap_size && h->harr[l] < h->harr[i])
         smallest = l;
+
     if (r < h->heap_size && h->harr[r] < h->harr[smallest])
         smallest = r;
+        
     if (smallest != i)
     {
         swap(&h->harr[i], &h->harr[smallest]);
