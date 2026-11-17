@@ -9,12 +9,13 @@
 using namespace std;
 
 vector<pair<int, int>> adjacency_list[DIM]; /// aici se creeaza un vector de vectori de perechi (fiecare element
-                                            /// al vectorului are 2 campuri de tip int),
-                                            /// in care o sa pastram lista de adiacenta al fiecarui nod.
-set<pair<int, int>> tail; /// creem un set in care pastram nodul si distanta acestuia;
-                          ///  perechile din set sunt ( distance[nod], nod)
+                                            /// al vectorului are 2 campuri de tip int) -> graful
 
-int distances[DIM], x, y, c, no_vertices, no_edges, k;
+set<pair<int, int>> tail;                   /// min heap of ( distance, node ) 
+                                            /// primul element are distanta minima pt ca set este sortat
+
+int distances[DIM]                          /// cea mai mica distanta descoperita de la sursa la nodul i
+, x, y, c, no_vertices, no_edges, k;
 
 ifstream fin("dijkstra.in");
 
@@ -23,22 +24,20 @@ int main()
     fin >> no_vertices >> no_edges;
     for (int i = 1; i <= no_edges; i++)
     {
-        fin >> x >> y >> c; /// citim legaturile care se formeaza intre noduri si costul acestora
-        /// Pentru graf orientat:
-        adjacency_list[x].push_back(make_pair(y, c)); /// in lista de adiacenta a nodului de plecare adaugam
-                                                      /// o pereche formata din nodul si costul adiacent
+        fin >> x >> y >> c; /// citim nod1 ; nod2 ; costul de pe muchie 
+        
+        adjacency_list[x].push_back(make_pair(y, c)); /// cream lista de adiacenta 
 
         /// Daca graful este neorientat adaugam:
         /// adjacency_list[y].push_back( make_pair(x, c) );
     }
 
     for (int i = 1; i <= no_vertices; i++)
-    {
-        distances[i] = INF; /// initializam distantele fiecarui nod ca fiind infinit
-    }
+        distances[i] = INF; /// presupunem ca restul nodurilor sunt unreachable
 
-    /// Consideram ca 1 este nodul de plecare.
-    distances[1] = 0; /// distanta nodului de plecare este 0
+
+    /// Consideram ca 1 este nodul de plecare.  
+    distances[1] = 0; /// distanta dintre sursa si sursa
 
     tail.insert(make_pair(0, 1)); /// adaugam in set distanta nodului 1;
     /// in set tinem perechi(cost, nod) doar pentru nodurile nealese inca si actualizate macar o data;
@@ -46,17 +45,16 @@ int main()
 
     while (!tail.empty()) /// cat timp exista elemente in set
     {
-        int vertex = tail.begin()->second; /// din primul element al setului, pastram al doilea
-                                           /// camp din pereche (nodul), pentru ca apoi sa
-        tail.erase(tail.begin()); /// il stergem
+        int vertex = tail.begin()->second; /// extragem nodul 
+        tail.erase(tail.begin());          /// it is a heap after all
 
         for (int i = 0; i < adjacency_list[vertex].size(); i++) /// parcurgem lista de adiacenta a nodului curent
         {
-            int neighbour = adjacency_list[vertex][i].first; /// nod vecin
-            int cost = adjacency_list[vertex][i].second;     /// costul pana la nodul vecin
+            int neighbour = adjacency_list[vertex][i].first; /// nod vecin i
+            int cost = adjacency_list[vertex][i].second;     /// costul pana la nodul vecin i
 
-            if (distances[neighbour] > distances[vertex] + cost) /// daca distanta nodului vecin e mai mare
-            {                                                    /// decat distanta nodului curent + costul pana la acesta, trebuie sa
+            if (distances[neighbour] > distances[vertex] + cost) /// daca pentru a ajunge in vecin prin vertex
+            {                                                    /// este mai ieftin decat ce am gasit pana acum
               /// actualizam valoarea din vectorul distances al vecinului.
 
                 tail.erase(make_pair(distances[neighbour], neighbour));  /// cauta in set daca exista acest nod si il sterge

@@ -1,4 +1,5 @@
 #include"bellmanford.h"
+#include <iostream>
 
 int main()
 {
